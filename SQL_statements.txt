@@ -1,0 +1,346 @@
+select Title, ProductionCompany, Locations from FilmLocations where Director <> "James Cameron";
+
+SELECT COUNT(*) FROM FilmLocations;
+
+SELECT COUNT(Locations) FROM FilmLocations WHERE Writer="James Cameron";
+
+SELECT COUNT(DISTINCT Title) ReleaseYear FROM FilmLocations WHERE ReleaseYear > 2000;
+SELECT DISTINCT Title ReleaseYear FROM FilmLocations WHERE ReleaseYear > 2000;
+
+INSERT INTO Instructor(ins_id, lastname, firstname, city, country)
+VALUES(4, 'Saha', 'Sandip', 'Edmonton', 'CA');
+
+UPDATE Instructor 
+SET city='Toronto' 
+WHERE firstname="Sandip";
+
+
+
+
+CREATE TABLE table_name (
+    column1 datatype,
+    column2 datatype,
+    column3 datatype,
+   ....
+);
+
+
+
+ALTER TABLE table_name
+ADD COLUMN column_name data_type column_constraint;
+
+ALTER TABLE table_name
+DROP COLUMN column_name;
+
+ALTER TABLE table_name
+ALTER COLUMN column_name SET DATA TYPE data_type;
+
+ALTER TABLE table_name
+RENAME COLUMN current_column_name TO new_column_name;
+
+
+
+
+
+---- Drop the PETRESCUE table in case it exists
+--drop table PETRESCUE;
+---- Create the PETRESCUE table 
+--create table PETRESCUE (
+--	ID INTEGER NOT NULL,
+--	ANIMAL VARCHAR(20),
+--	QUANTITY INTEGER,
+--	COST DECIMAL(6,2),
+--	RESCUEDATE DATE,
+--	PRIMARY KEY (ID)
+--	);
+---- Insert sample data into PETRESCUE table
+--insert into PETRESCUE values 
+--	(1,'Cat',9,450.09,'2018-05-29'),
+--	(2,'Dog',3,666.66,'2018-06-01'),
+--	(3,'Dog',1,100.00,'2018-06-04'),
+--	(4,'Parrot',2,50.00,'2018-06-04'),
+--	(5,'Dog',1,75.75,'2018-06-10'),
+--	(6,'Hamster',6,60.60,'2018-06-11'),
+--	(7,'Cat',1,44.44,'2018-06-11'),
+--	(8,'Goldfish',24,48.48,'2018-06-14'),
+--	(9,'Dog',2,222.22,'2018-06-15')
+--	
+--;
+
+
+
+
+select SUM(COST) from PETRESCUE;
+select SUM(COST) AS SUM_OF_COST from PETRESCUE;
+select MAX(QUANTITY) from PETRESCUE;
+select AVG(COST) from PETRESCUE;
+select AVG(COST/QUANTITY) from PETRESCUE where ANIMAL = 'Dog';
+
+select ROUND(COST) from PETRESCUE;
+select LENGTH(ANIMAL) from PETRESCUE;
+select UCASE(ANIMAL) from PETRESCUE;
+select DISTINCT(UCASE(ANIMAL)) from PETRESCUE;
+select * from PETRESCUE where LCASE(ANIMAL) = 'cat';
+
+select DAY(RESCUEDATE) from PETRESCUE where ANIMAL = 'Cat';
+select SUM(QUANTITY) from PETRESCUE where MONTH(RESCUEDATE)='05';
+select SUM(QUANTITY) from PETRESCUE where DAY(RESCUEDATE)='14';
+select (RESCUEDATE + 3 DAYS) from PETRESCUE;
+select (CURRENT DATE - RESCUEDATE) from PETRESCUE;
+
+
+How does a typical Nested SELECT statement syntax look?
+
+SELECT column_name [, column_name ]
+FROM table1 [, table2 ]
+WHERE column_name OPERATOR
+   (SELECT column_name [, column_name ]
+   FROM table1 [, table2 ]
+   WHERE condition);
+
+
+select EMP_ID, F_NAME, L_NAME, SALARY 
+from employees 
+where SALARY < (select AVG(SALARY) 
+                from employees);
+
+select EMP_ID, SALARY, ( select MAX(SALARY) from employees ) AS MAX_SALARY 
+from employees;
+
+select * from ( select EMP_ID, F_NAME, L_NAME, DEP_ID from employees) AS EMP4ALL; 
+
+
+
+SELECT column_name(s)
+FROM table1, table2
+WHERE table1.column_name = table2.column_name;
+
+
+select * from employees
+where JOB_ID in (select JOB_IDENT from jobs where JOB_TITLE = 'Jr. Designer')
+
+
+select JOB_TITLE, MIN_SALARY,MAX_SALARY,JOB_IDENT from jobs where JOB_IDENT IN (select JOB_ID from employees where YEAR(B_DATE)>1976 and SEX='F' );
+
+select * from employees, jobs where employees.JOB_ID = jobs.JOB_IDENT;
+select * from employees E, jobs J where E.JOB_ID = J.JOB_IDENT;
+select E.EMP_ID,E.F_NAME,E.L_NAME, J.JOB_TITLE from employees E, jobs J where E.JOB_ID = J.JOB_IDENT;
+
+
+
+
+# type in your query to retrieve list of all tables in the database for your db2 schema (username)
+%sql select TABSCHEMA, TABNAME, CREATE_TIME from SYSCAT.TABLES where TABSCHEMA='wtb26866'
+
+%sql select * from SYSCAT.TABLES where TABNAME = 'SCHOOLS'
+
+# type in your query to retrieve the number of columns in the SCHOOLS table
+%sql select count(*) from SYSCAT.COLUMNS where TABNAME = 'SCHOOLS'
+
+# type in your query to retrieve all column names in the SCHOOLS table along with their datatypes and length
+%sql select COLNAME, TYPENAME, LENGTH from SYSCAT.COLUMNS where TABNAME = 'SCHOOLS'
+
+
+
+Which Schools have Average Student Attendance lower than 70%?
+
+%sql SELECT Name_of_School, Average_Student_Attendance  \
+     from SCHOOLS \
+     where CAST ( REPLACE(Average_Student_Attendance, '%', '') AS DOUBLE ) < 70 \
+     order by Average_Student_Attendance
+     
+or,
+
+%sql SELECT Name_of_School, Average_Student_Attendance  \
+     from SCHOOLS \
+     where DECIMAL ( REPLACE(Average_Student_Attendance, '%', '') ) < 70 \
+     order by Average_Student_Attendance
+
+
+
+
+%sql select Community_Area_Name, sum(College_Enrollment) AS TOTAL_ENROLLMENT \
+from SCHOOLS\
+   group by Community_Area_Name \
+   order by TOTAL_ENROLLMENT asc \
+   fetch first 5 rows only
+
+
+
+%sql select "Elementary, Middle, or High School", avg(safety_score) from CHICAGO_PUBLIC_SCHOOLS group by "Elementary, Middle, or High School"
+
+
+%sql select community_area_name, community_area_number from census_data where community_area_number = (select community_area_number from chicago_crime_data group by community_area_number order by count(community_area_number) desc limit 1)
+
+
+CREATE VIEW view_name AS
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+
+
+
+
+How does a CROSS JOIN (also known as Cartesian Join) statement syntax look?
+
+SELECT column_name(s)
+FROM table1
+CROSS JOIN table2;
+
+How does an INNER JOIN statement syntax look?
+
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+WHERE condition;
+
+How does a LEFT OUTER JOIN statement syntax look?
+
+SELECT column_name(s)
+FROM table1
+LEFT OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+How does a RIGHT OUTER JOIN statement syntax look?
+
+SELECT column_name(s)
+FROM table1
+RIGHT OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+How does a FULL OUTER JOIN statement syntax look?
+
+SELECT column_name(s)
+FROM table1
+FULL OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+How does a SELF JOIN statement syntax look?
+
+SELECT column_name(s)
+FROM table1 T1, table1 T2
+WHERE condition;
+
+
+
+Problem 1
+List the case number, type of crime and community area for all crimes in community area number 18.
+Hint 1
+Use tables CHICAGO_CRIME_DATA and CENSUS_DATA.
+Hint 2
+Use an inner join.
+Hint 3
+The column PRIMARY_TYPE contains the crime type.
+
+
+SELECT CASE_NUMBER, PRIMARY_TYPE
+FROM CHICAGO_CRIME_DATA
+INNER JOIN CENSUS_DATA
+ON CHICAGO_CRIME_DATA.COMMUNITY_AREA_NUMBER = CENSUS_DATA.COMMUNITY_AREA_NUMBER
+WHERE CHICAGO_CRIME_DATA.COMMUNITY_AREA_NUMBER <18;
+
+
+Problem 2
+List all crimes that took place at a school. Include case number, crime type and community name.
+Hint 1
+Use tables CHICAGO_CRIME_DATA and CENSUS_DATA.
+Hint 2
+Use a left join or a right join.
+Hint 3
+The column LOCATION_DESCRIPTION will help you find the crime location.
+
+SELECT CASE_NUMBER, PRIMARY_TYPE, COMMUNITY_AREA_NAME
+FROM CHICAGO_CRIME_DATA
+LEFT OUTER JOIN CENSUS_DATA
+ON CHICAGO_CRIME_DATA.COMMUNITY_AREA_NUMBER = CENSUS_DATA.COMMUNITY_AREA_NUMBER
+WHERE CHICAGO_CRIME_DATA.LOCATION_DESCRIPTION like'%SCHOOL%';
+
+
+
+
+Problem 3
+For the communities of Oakland, Armour Square, Edgewater and CHICAGO list the associated community_area_numbers and the case_numbers.
+Hint 1
+Use tables CHICAGO_CRIME_DATA and CENSUS_DATA.
+Hint 2
+Use a full outer join.
+Hint 3
+Use COMMUNITY_AREA_NUMBER from CENSUS_DATA.
+
+
+SELECT CENSUS_DATA.COMMUNITY_AREA_NUMBER, CASE_NUMBER
+FROM CHICAGO_CRIME_DATA
+FULL OUTER JOIN CENSUS_DATA
+ON CHICAGO_CRIME_DATA.COMMUNITY_AREA_NUMBER = CENSUS_DATA.COMMUNITY_AREA_NUMBER
+WHERE CENSUS_DATA.COMMUNITY_AREA_NAME LIKE '%Oakland%'
+   OR CENSUS_DATA.COMMUNITY_AREA_NAME LIKE '%Armour Square%'
+   OR CENSUS_DATA.COMMUNITY_AREA_NAME LIKE '%Edgewater%'
+   OR CENSUS_DATA.COMMUNITY_AREA_NAME like '%CHICAGO %';
+
+
+--hands_on_lab_Advanced SQL Techniques
+
+--problem 1
+SELECT NAME_OF_SCHOOL, CENSUS_DATA.COMMUNITY_AREA_NAME, AVERAGE_STUDENT_ATTENDANCE
+FROM CHICAGO_PUBLIC_SCHOOLS
+LEFT OUTER JOIN CENSUS_DATA
+ON CHICAGO_PUBLIC_SCHOOLS.COMMUNITY_AREA_NUMBER = CENSUS_DATA.COMMUNITY_AREA_NUMBER
+WHERE CENSUS_DATA.HARDSHIP_INDEX = 98;
+
+
+
+
+-- exercise2 creating a view
+--CREATE VIEW School_View AS
+--SELECT NAME_OF_SCHOOL as School_Name, Safety_Icon as Safety_Rating, Family_Involvement_Icon as Family_Rating, Environment_Icon as Environment_Rating, Instruction_Icon as Instruction_Rating, Leaders_Icon as Leaders_Rating, Teachers_Icon as Teachers_Rating   
+--FROM CHICAGO_PUBLIC_SCHOOLS;
+----WHERE condition;
+
+select * from School_View
+
+select School_Name, Leaders_Rating from School_View
+
+
+
+---- create a stored procedure (example)
+--#SET TERMINATOR @
+CREATE PROCEDURE UPDATE_SALEPRICE ( 
+    IN Animal_ID INTEGER, IN Animal_Health VARCHAR(5) )     -- ( { IN/OUT type } { parameter-name } { data-type }, ... )
+
+LANGUAGE SQL                                                -- Language used in this routine
+MODIFIES SQL DATA                                           -- This routine will only write/modify data in the table
+
+BEGIN 
+
+    IF Animal_Health = 'BAD' THEN                           -- Start of conditional statement
+        UPDATE PETSALE
+        SET SALEPRICE = SALEPRICE - (SALEPRICE * 0.25)
+        WHERE ID = Animal_ID;
+    
+    ELSEIF Animal_Health = 'WORSE' THEN
+        UPDATE PETSALE
+        SET SALEPRICE = SALEPRICE - (SALEPRICE * 0.5)
+        WHERE ID = Animal_ID;
+        
+    ELSE
+        UPDATE PETSALE
+        SET SALEPRICE = SALEPRICE
+        WHERE ID = Animal_ID;
+
+    END IF;                                                 -- End of conditional statement
+    
+END
+@                                                           -- Routine termination character
+
+
+
+
+
+
+
+
+

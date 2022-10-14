@@ -1,0 +1,14 @@
+project title:
+reducing credit card fraud using data science.
+
+I choose credit card fraud as the topic to apply the data science methodology. Nowadays E-commerce is so popular, and people shop online a lot. Thus, credit card fraud happens quite often, which creates a lot of problems for banks.
+
+1. The problem is that people shop online a lot nowadays, which could cause leaks of their credit card information. This can cause a lot of problems for banks, wasting a lot of financial and personnel resources. 
+2. The banks need to use their customer information and transaction information as data to create a model to automatically determine whether the transaction is a fraud. If yes, the transaction will be cancelled or reversed immediately, to avoid the loss to the banks and their customers.
+
+
+1: Analytic Approach: A decision tree is used to classify credit card transactions. Predictive features (like whether the transaction is paid to a new account, whether the credit card holder has bought stuff of a certain category before) are used to partition the data.
+2. Data Requirement: the decision tree has requirements for the data content, formats and representations so that the decision tree can solve the problem better.
+3.  Data Collection: customer information (gender, age, job, education, cultural background, health, etc.) is provided by the banks. Transaction information (shopping categories, history of the company, etc.) is collected during the transaction.
+4. Data Understanding and Preparation: we check the data set to know how many features (customer information and transaction information) there are in the data. For preparation, we explore the data further to make sure the data is in the right format and check data accuracy and missing data.
+5, Modeling and Evaluation: the data is fed into a decision tree model of SKLearn package. A decision tree is built using the data features to partition the data into several subsets. For evaluation, the data is split into a training set and a test set. The decision tree is built using the training set of 70% of the total data and the model is evaluated using the test set. From the evaluation, we can know the accuracy of the model and how confident we are about the classification of the credit card transations.
